@@ -11,7 +11,7 @@ import static java.util.Objects.isNull;
 @Service
 public class OperationServiceImpl implements OperationService {
 
-    public static final double MAX_TRANSFER_LIMIT = 100.000;
+    public static final double MAX_TRANSFER_LIMIT = 1000000.0;
     public static final double MIN_TRANSFER_LIMIT = 1.0;
 
     @Autowired
@@ -64,7 +64,7 @@ public class OperationServiceImpl implements OperationService {
             throw new AccountExistsException();
         }
 
-        if (amount < account.getAmount()) {
+        if (amount > account.getAmount()) {
             throw new LimitMoneyException();
         }
 

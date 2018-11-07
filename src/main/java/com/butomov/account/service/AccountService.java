@@ -21,7 +21,7 @@ public interface AccountService {
 
     Account getAccount(long accountId);
 
-    Double getAmount(UUID userId);
+    Double getAmount(long accountId);
 
     void updateAccount(Account account);
 }

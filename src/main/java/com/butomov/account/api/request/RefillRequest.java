@@ -15,5 +15,6 @@ public class RefillRequest {
 
     @JsonProperty(value = "amount")
     @DecimalMin(value = "1")
+    @NonNull
     private Double amount;
 }

@@ -42,8 +42,8 @@ public class AccountController extends AbstractAPI {
         }
     }
 
-    @GetMapping(value = "/accounts/{userId}")
-    public ResponseEntity<Double> getAmount(@PathVariable String userId) {
-        return ResponseEntity.ok(accountService.getAmount(UUID.fromString(userId)));
+    @GetMapping(value = "/accounts/{accountId}")
+    public ResponseEntity<Double> getAmount(@PathVariable String accountId) {
+        return ResponseEntity.ok(accountService.getAmount(Long.valueOf(accountId)));
     }
 }

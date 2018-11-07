@@ -51,8 +51,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Double getAmount(UUID userId) {
-        return getAccount(userId).getAmount();
+    public Double getAmount(long accountId) {
+        return getAccount(accountId).getAmount();
     }
 
     @Override

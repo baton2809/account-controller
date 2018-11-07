@@ -12,6 +12,7 @@ public class UserRequest {
     private String username;
 
     @JsonProperty(value = "password")
+    @NonNull
     private String password;
 
 }
