@@ -11,9 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route
 public class MainView extends VerticalLayout {
 
-    public static final String DEMO_USER = "Demo";
     public static final String NEW_USER = "New User";
     public static final String CREATE_ACCOUNT = "Create Account";
+    public static final String REFILL_ACCOUNT = "Refill the account";
+    public static final String WITHDRAW_ACCOUNT = "Withdraw the account";
+    public static final String TRANSFER_MONEY = "Transfer Money";
+    public static final String GET_MONEY = "Get amount of money";
+
     private final Button createUserButton;
     private final Button createAccountButton;
     private final Button refillButton;
@@ -42,17 +46,16 @@ public class MainView extends VerticalLayout {
 
         createUserButton = new Button(NEW_USER, VaadinIcon.PLUS.create());
         createAccountButton = new Button(CREATE_ACCOUNT, VaadinIcon.PLUS.create());
-        refillButton = new Button("Refill the account", VaadinIcon.MONEY_DEPOSIT.create());
-        withdrawButton = new Button("Withdraw the account", VaadinIcon.MONEY_WITHDRAW.create());
-        transferButton = new Button("Transfer Money", VaadinIcon.MONEY_EXCHANGE.create());
-        moneyButton = new Button("Get amount of money", VaadinIcon.MONEY.create());
+        refillButton = new Button(REFILL_ACCOUNT, VaadinIcon.MONEY_DEPOSIT.create());
+        withdrawButton = new Button(WITHDRAW_ACCOUNT, VaadinIcon.MONEY_WITHDRAW.create());
+        transferButton = new Button(TRANSFER_MONEY, VaadinIcon.MONEY_EXCHANGE.create());
+        moneyButton = new Button(GET_MONEY, VaadinIcon.MONEY.create());
 
         add(createUserButton, userCreator, createAccountButton, accountCreator,
                 refillButton, refillForm, withdrawButton, withdrawForm,
                 transferButton, transferForm, moneyButton, moneyForm);
 
         createUserButton.addClickListener(e -> userCreator.createUser());
-        userCreator.setChangeHandler(() -> {}); // Может быть для отображения списка всех пользователей в реальном режиме
         createAccountButton.addClickListener(e -> accountCreator.createAccount());
         refillButton.addClickListener(e -> refillForm.expandForm());
         withdrawButton.addClickListener(e -> withdrawForm.expandForm());

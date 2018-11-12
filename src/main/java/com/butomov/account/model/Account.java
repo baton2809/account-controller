@@ -1,19 +1,19 @@
-package com.butomov.account.domain;
+package com.butomov.account.model;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 
-@RequiredArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 @Entity
 public class Account {
 
@@ -29,10 +29,4 @@ public class Account {
 
     @Column
     private Double amount;
-    // TODO добавить лимит
-
-    public Account(final User user) {
-        this.user = user;
-        this.amount = 0.;
-    }
 }

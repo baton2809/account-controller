@@ -1,75 +1,86 @@
 package com.butomov.account.service;
 
-import com.butomov.account.domain.Account;
 import com.butomov.account.exceptions.AccountExistsException;
 import com.butomov.account.exceptions.LimitMoneyException;
+import com.butomov.account.model.Account;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import static java.util.Objects.isNull;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class OperationServiceImpl implements OperationService {
 
-    public static final double MAX_TRANSFER_LIMIT = 1000000.0;
-    public static final double MIN_TRANSFER_LIMIT = 1.0;
+    public static final double MAX_TRANSFER_LIMIT = 1000000d;
+    public static final double MIN_TRANSFER_LIMIT = 1d;
 
     @Autowired
     private AccountService accountService;
 
-    @Autowired
-    private OperationService operationService;
-
     @Override
+    @Transactional
     public boolean transfer(long senderId, long payeeId, double amount)
             throws LimitMoneyException, AccountExistsException {
+        log.debug("transfer calls...");
 
         if (amount < MIN_TRANSFER_LIMIT || amount > MAX_TRANSFER_LIMIT) {
+            log.error("amount doesn't fit limit...");
             throw new LimitMoneyException();
         }
 
         withdraw(senderId, amount);
         refill(payeeId, amount);
+        log.debug("transfer transaction SUCCESS.");
         return true;
     }
 
     @Override
-    public double refill(long accountId, Double amount)
+    @Transactional
+    public double refill(long accountId, double amount)
             throws LimitMoneyException, AccountExistsException {
+        log.debug("refill calls...");
 
         if (amount < MIN_TRANSFER_LIMIT || amount > MAX_TRANSFER_LIMIT) {
+            log.error("amount doesn't fit limit...");
             throw new LimitMoneyException();
         }
 
-        Account account = accountService.getAccount(accountId);
-        if (isNull(account)) {
-            throw new AccountExistsException();
-        }
+        Account account = Optional.ofNullable(accountService.getAccount(accountId))
+                .orElseThrow(AccountExistsException::new);
 
         account.setAmount(account.getAmount() + amount);
-        accountService.updateAccount(account);
+        log.debug("updates amount...");
+        accountService.updateOrCreateAccount(account);
+        log.debug("refill transaction SUCCESS.");
         return account.getAmount();
     }
 
     @Override
-    public boolean withdraw(long accountId, double amount)
+    @Transactional
+    public double withdraw(long accountId, double amount)
             throws LimitMoneyException, AccountExistsException {
+        log.debug("withdraw calls...");
 
         if (amount < MIN_TRANSFER_LIMIT || amount > MAX_TRANSFER_LIMIT) {
+            log.error("amount doesn't fit limit...");
             throw new LimitMoneyException();
         }
 
-        Account account = accountService.getAccount(accountId);
-        if (isNull(account)) {
-            throw new AccountExistsException();
-        }
+        final Account account = Optional.ofNullable(accountService.getAccount(accountId))
+                .orElseThrow(AccountExistsException::new);
 
         if (amount > account.getAmount()) {
+            log.error("amount is incorrect...");
             throw new LimitMoneyException();
         }
 
         account.setAmount(account.getAmount() - amount);
-        accountService.updateAccount(account);
-        return true;
+        log.debug("updates amount...");
+        accountService.updateOrCreateAccount(account);
+        log.debug("withdraw transaction SUCCESS.");
+        return account.getAmount();
     }
 }

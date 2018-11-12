@@ -1,9 +1,7 @@
-package com.butomov.account.domain;
+package com.butomov.account.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,10 +9,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.UUID;
 
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "password")
 @Entity
 public class User {
 
@@ -27,8 +27,4 @@ public class User {
 
     @Column
     private String password;
-
-    public User(final String name) {
-        this.name = name;
-    }
 }

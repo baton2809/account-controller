@@ -1,6 +1,6 @@
 package com.butomov.account.repository;
 
-import com.butomov.account.domain.User;
+import com.butomov.account.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

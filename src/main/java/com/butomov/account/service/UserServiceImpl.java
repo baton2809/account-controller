@@ -1,8 +1,9 @@
 package com.butomov.account.service;
 
-import com.butomov.account.domain.User;
 import com.butomov.account.exceptions.UserExistsException;
+import com.butomov.account.model.User;
 import com.butomov.account.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 import static java.util.Objects.nonNull;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -18,8 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) throws UserExistsException {
-        User existedUser = getUser(user.getName());
-        if (nonNull(existedUser)) {
+        log.info("creating user...");
+        if (nonNull(getUser(user.getName()))) {
+            log.error("user exists already...");
             throw new UserExistsException();
         }
         return userRepository.save(user);

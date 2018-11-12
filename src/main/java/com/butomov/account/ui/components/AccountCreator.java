@@ -23,13 +23,16 @@ import org.springframework.web.client.RestTemplate;
 @UIScope
 public class AccountCreator extends VerticalLayout implements KeyNotifier {
 
+    public static final String CANCEL = "Cancel";
+    public static final String LOCALHOST = "http://localhost:8080";
+
     @Autowired
     private AccountService accountService;
 
     private TextField user = new TextField("User ID");
 
     private Button save = new Button("Save", VaadinIcon.CHECK.create());
-    private Button cancel = new Button("Cancel");
+    private Button cancel = new Button(CANCEL);
     private HorizontalLayout actions = new HorizontalLayout(save, cancel);
 
     public AccountCreator() {
@@ -39,7 +42,7 @@ public class AccountCreator extends VerticalLayout implements KeyNotifier {
 
         save.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e-> save());
+        addKeyPressListener(Key.ENTER, e -> save());
         save.addClickListener(e -> save());
         cancel.addClickListener(e -> cancel());
         setVisible(false);
@@ -66,7 +69,7 @@ public class AccountCreator extends VerticalLayout implements KeyNotifier {
 
         try {
             HttpEntity<AccountResponse> response = restTemplate
-                    .exchange(String.format("http://localhost:8080/api/accounts/%s", userId),
+                    .exchange(String.format(LOCALHOST + "/accounts/%s", userId),
                             HttpMethod.PUT,
                             null,
                             AccountResponse.class);

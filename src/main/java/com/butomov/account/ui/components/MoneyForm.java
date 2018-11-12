@@ -22,13 +22,16 @@ import org.springframework.web.client.RestTemplate;
 @UIScope
 public class MoneyForm extends VerticalLayout implements KeyNotifier {
 
+    public static final String LOCALHOST = "http://localhost:8080";
+    public static final String CANCEL = "Cancel";
+
     @Autowired
     private AccountService accountService;
 
     private TextField account = new TextField("Account ID");
 
     private Button get = new Button("Get", VaadinIcon.MONEY.create());
-    private Button cancel = new Button("Cancel");
+    private Button cancel = new Button(CANCEL);
     private HorizontalLayout actions = new HorizontalLayout(get, cancel);
 
     public MoneyForm() {
@@ -38,7 +41,7 @@ public class MoneyForm extends VerticalLayout implements KeyNotifier {
 
         get.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e-> get());
+        addKeyPressListener(Key.ENTER, e -> get());
         get.addClickListener(e -> get());
         cancel.addClickListener(e -> cancel());
         setVisible(false);
@@ -65,7 +68,7 @@ public class MoneyForm extends VerticalLayout implements KeyNotifier {
 
         try {
             HttpEntity<Double> response = restTemplate
-                    .exchange(String.format("http://localhost:8080/api/accounts/%s", accountId),
+                    .exchange(String.format(LOCALHOST + "/accounts/%s", accountId),
                             HttpMethod.GET,
                             null,
                             Double.class);

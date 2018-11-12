@@ -1,6 +1,6 @@
 package com.butomov.account.ui.components;
 
-import com.butomov.account.api.request.RefillRequest;
+import com.butomov.account.api.request.WithdrawRequest;
 import com.butomov.account.service.OperationService;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.KeyNotifier;
@@ -20,6 +20,9 @@ import org.springframework.web.client.RestTemplate;
 @UIScope
 public class WithdrawForm extends VerticalLayout implements KeyNotifier {
 
+    public static final String LOCALHOST = "http://localhost:8080";
+    public static final String CANCEL = "Cancel";
+
     @Autowired
     private OperationService operationService;
 
@@ -27,7 +30,7 @@ public class WithdrawForm extends VerticalLayout implements KeyNotifier {
     private TextField amount = new TextField("Amount");
 
     private Button withdraw = new Button("Withdraw", VaadinIcon.MONEY_DEPOSIT.create());
-    private Button cancel = new Button("Cancel");
+    private Button cancel = new Button(CANCEL);
     private HorizontalLayout actions = new HorizontalLayout(withdraw, cancel);
 
     public WithdrawForm() {
@@ -37,7 +40,7 @@ public class WithdrawForm extends VerticalLayout implements KeyNotifier {
 
         withdraw.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e-> refill());
+        addKeyPressListener(Key.ENTER, e -> refill());
         withdraw.addClickListener(e -> refill());
         cancel.addClickListener(e -> cancel());
         setVisible(false);
@@ -63,18 +66,18 @@ public class WithdrawForm extends VerticalLayout implements KeyNotifier {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
-        HttpEntity<RefillRequest> request = new HttpEntity<>(
-                new RefillRequest(accountId, amount),
+        HttpEntity<WithdrawRequest> request = new HttpEntity<>(
+                WithdrawRequest.builder().accountId(accountId).amount(amount).build(),
                 headers
         );
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8080/api/withdraw",
-                HttpMethod.POST,
-                request,
-                String.class);
+            ResponseEntity<String> response = restTemplate.exchange(LOCALHOST + "/operations/withdraw",
+                    HttpMethod.POST,
+                    request,
+                    String.class);
 
-            Notification.show(response.getBody().replaceAll("\"",""));
+            Notification.show(response.getBody().replaceAll("\"", ""));
         } catch (Exception e) {
             Notification.show(e.getMessage());
         }

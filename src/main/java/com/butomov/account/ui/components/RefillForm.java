@@ -20,6 +20,9 @@ import org.springframework.web.client.RestTemplate;
 @UIScope
 public class RefillForm extends VerticalLayout implements KeyNotifier {
 
+    public static final String CANCEL = "Cancel";
+    public static final String LOCALHOST = "http://localhost:8080";
+
     @Autowired
     private OperationService operationService;
 
@@ -27,7 +30,7 @@ public class RefillForm extends VerticalLayout implements KeyNotifier {
     private TextField amount = new TextField("Amount");
 
     private Button refill = new Button("Refill", VaadinIcon.MONEY_DEPOSIT.create());
-    private Button cancel = new Button("Cancel");
+    private Button cancel = new Button(CANCEL);
     private HorizontalLayout actions = new HorizontalLayout(refill, cancel);
 
     public RefillForm() {
@@ -37,7 +40,7 @@ public class RefillForm extends VerticalLayout implements KeyNotifier {
 
         refill.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e-> refill());
+        addKeyPressListener(Key.ENTER, e -> refill());
         refill.addClickListener(e -> refill());
         cancel.addClickListener(e -> cancel());
         setVisible(false);
@@ -64,18 +67,17 @@ public class RefillForm extends VerticalLayout implements KeyNotifier {
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
         HttpEntity<RefillRequest> request = new HttpEntity<>(
-                new RefillRequest(accountId, amount),
+                RefillRequest.builder().accountId(accountId).amount(amount).build(),
                 headers
         );
 
-
         try {
-            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8080/api/refill",
+            ResponseEntity<String> response = restTemplate.exchange(LOCALHOST + "/operations/refill",
                     HttpMethod.POST,
                     request,
                     String.class);
 
-            Notification.show(response.getBody().replaceAll("\"",""));
+            Notification.show(response.getBody().replaceAll("\"", ""));
         } catch (Exception e) {
             Notification.show(e.getMessage());
         }

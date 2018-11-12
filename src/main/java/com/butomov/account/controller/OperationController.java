@@ -5,7 +5,6 @@ import com.butomov.account.api.exceptions.LimitMoneyExceeded;
 import com.butomov.account.api.request.RefillRequest;
 import com.butomov.account.api.request.TransferDetails;
 import com.butomov.account.api.request.WithdrawRequest;
-import com.butomov.account.api.response.AccountResponse;
 import com.butomov.account.exceptions.AccountExistsException;
 import com.butomov.account.exceptions.LimitMoneyException;
 import com.butomov.account.service.OperationService;
@@ -14,10 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class OperationController extends AbstractAPI {
+@RequestMapping("/operations")
+public class OperationController {
 
     private final OperationService operationService;
 
@@ -30,13 +31,8 @@ public class OperationController extends AbstractAPI {
     public ResponseEntity refillMoney(@RequestBody RefillRequest request)
             throws LimitMoneyExceeded, AccountNotFound {
 
-        AccountResponse response = new AccountResponse();
         try {
-            double totalAmount = operationService.refill(request.getAccountId(), request.getAmount());
-
-            response.setAccountId(request.getAccountId());
-            response.setAmount(totalAmount);
-
+            operationService.refill(request.getAccountId(), request.getAmount());
         } catch (LimitMoneyException e) {
             throw new LimitMoneyExceeded();
         } catch (AccountExistsException e) {
@@ -69,7 +65,6 @@ public class OperationController extends AbstractAPI {
                     transferDetails.getPayeeId(),
                     transferDetails.getAmount()
             );
-
         } catch (LimitMoneyException e) {
             throw new LimitMoneyExceeded();
         } catch (AccountExistsException e) {

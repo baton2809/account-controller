@@ -1,18 +1,21 @@
 package com.butomov.account.service;
 
-import com.butomov.account.domain.Account;
-import com.butomov.account.domain.User;
 import com.butomov.account.exceptions.AccountExistsException;
+import com.butomov.account.exceptions.AccountNotFoundException;
 import com.butomov.account.exceptions.UserNotFoundException;
+import com.butomov.account.model.Account;
+import com.butomov.account.model.User;
 import com.butomov.account.repository.AccountRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+@Slf4j
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -25,18 +28,21 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account createAccount(UUID userId)
             throws AccountExistsException, UserNotFoundException {
+        log.info("creating account...");
+
+        final User user = Optional.ofNullable(userService.getUser(userId))
+                .orElseThrow(UserNotFoundException::new);
 
         if (nonNull(getAccount(userId))) {
+            log.error("account exists already...");
             throw new AccountExistsException();
         }
 
-        final User user = userService.getUser(userId);
-        if (isNull(user)) {
-            throw new UserNotFoundException();
-        }
-
-        Account account = new Account(user);
-        accountRepository.save(account);
+        Account account = Account.builder()
+                .user(user)
+                .amount(0d)
+                .build();
+        updateOrCreateAccount(account);
         return account;
     }
 
@@ -51,12 +57,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Double getAmount(long accountId) {
-        return getAccount(accountId).getAmount();
+    public Double getAmount(long accountId) throws AccountNotFoundException {
+        Account account = Optional.ofNullable(getAccount(accountId))
+                .orElseThrow(AccountNotFoundException::new);
+        return account.getAmount();
     }
 
     @Override
-    public void updateAccount(Account account) {
+    public void updateOrCreateAccount(Account account) {
         accountRepository.save(account);
     }
 }

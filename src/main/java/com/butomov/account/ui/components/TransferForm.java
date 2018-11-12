@@ -20,6 +20,9 @@ import org.springframework.web.client.RestTemplate;
 @UIScope
 public class TransferForm extends VerticalLayout implements KeyNotifier {
 
+    public static final String CANCEL = "Cancel";
+    public static final String LOCALHOST = "http://localhost:8080";
+
     @Autowired
     private OperationService operationService;
 
@@ -28,7 +31,7 @@ public class TransferForm extends VerticalLayout implements KeyNotifier {
     private TextField amount = new TextField("Amount ID");
 
     private Button transfer = new Button("Transfer", VaadinIcon.MONEY_EXCHANGE.create());
-    private Button cancel = new Button("Cancel");
+    private Button cancel = new Button(CANCEL);
     private HorizontalLayout actions = new HorizontalLayout(transfer, cancel);
 
     public TransferForm() {
@@ -38,7 +41,7 @@ public class TransferForm extends VerticalLayout implements KeyNotifier {
 
         transfer.getElement().getThemeList().add("primary");
 
-        addKeyPressListener(Key.ENTER, e-> refill());
+        addKeyPressListener(Key.ENTER, e -> refill());
         transfer.addClickListener(e -> refill());
         cancel.addClickListener(e -> cancel());
         setVisible(false);
@@ -60,18 +63,18 @@ public class TransferForm extends VerticalLayout implements KeyNotifier {
         senderId.focus();
     }
 
-    private void callRestService(long sendertId, long payeeId, double amount) {
+    private void callRestService(long senderId, long payeeId, double amount) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 
         HttpEntity<TransferDetails> request = new HttpEntity<>(
-                new TransferDetails(sendertId, payeeId, amount),
+                TransferDetails.builder().senderId(senderId).payeeId(payeeId).amount(amount).build(),
                 headers
         );
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange("http://localhost:8080/api/transfer",
+            ResponseEntity<String> response = restTemplate.exchange(LOCALHOST + "/operations/transfer",
                     HttpMethod.POST,
                     request,
                     String.class);
